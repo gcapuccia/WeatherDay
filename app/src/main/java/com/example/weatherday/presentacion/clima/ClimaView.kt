@@ -44,24 +44,24 @@ fun ClimaView(
                 temperatura = state.temperatura,
                 descripcion = state.descripcion,
                 st = state.st
-
-            )
+            ){
+                onAction(ClimaIntencion.pronosticoClima(state.ciudad))
+            }
             ClimaEstado.Vacio -> CargandoView()
-            ClimaEstado.Cargando -> EmptyView()
+            ClimaEstado.Cargando -> CargandoView()
         }
-        Spacer(modifier = Modifier.height(100.dp))
+
+
     }
+
 }
+
 
 @Composable
 fun CargandoView(){
     Text(text = "Cargando...")
 }
 
-@Composable
-fun EmptyView(){
-    Text(text = "No hay nada que mostrar")
-}
 
 @Composable
 fun ErrorView(mensaje: String){
@@ -86,28 +86,16 @@ fun ClimaView(ciudad: String, temperatura: Double, descripcion: String, st:Doubl
         Text(text = "sensacionTermica: ${st}°", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
 
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ClimaPreviewVacio() {
-    WeatherDayTheme {
-        ClimaView(state = ClimaEstado.Vacio, onAction = {})
+fun ClimaviewPreview(){
+    WeatherDayTheme{
+        ClimaView(state = ClimaEstado.Exitoso()) {
+
+        }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ClimaPreviewError() {
-    WeatherDayTheme {
-        ClimaView(state = ClimaEstado.Error("Error Server"), onAction = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ClimaPreviewExitoso() {
-    WeatherDayTheme {
-        ClimaView(state = ClimaEstado.Exitoso(ciudad = "Mendoza", temperatura = 0.0), onAction = {})
-    }
-}

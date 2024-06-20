@@ -15,6 +15,11 @@ class Enrutador(
                 val route = String.format(format="%s?lat=%f&lon=%f",ruta.id,ruta.lat,ruta.lon)
                 navHostController.navigate(route)
             }
+
+            is Ruta.Pronostico ->{
+                val ci = String.format(ruta.id,ruta.ci)
+                navHostController.navigate(ci)
+            }
         }
     }
 }

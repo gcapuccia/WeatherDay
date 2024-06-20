@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherday.repository.Repositorio
-import com.example.weatherday.repository.modelos.Ciudad
 import com.example.weatherday.router.Router
+import com.example.weatherday.router.Ruta
 import kotlinx.coroutines.launch
 
 
@@ -23,26 +23,22 @@ class ClimaViewModel(
 
     fun ejecutar(intencion: ClimaIntencion){
         when(intencion){
-            ClimaIntencion.BorrarTodo -> borrarTodo()
-            ClimaIntencion.MostrarCaba -> mostrarCaba()
-            //ClimaIntencion.MostrarCordoba -> mostrarCordoba()
-            ClimaIntencion.MostrarError -> mostrarError()
+
             is ClimaIntencion.actualizarClima -> traerClima()
+            is ClimaIntencion.pronosticoClima -> MostrarPronostico(ciudad = intencion.ciudad)
             else -> {}
+
         }
     }
 
-    private fun mostrarError(){
-        uiState = ClimaEstado.Error("este es un error de mentiras")
+
+    private fun MostrarPronostico(ciudad: String){
+        val ruta = Ruta.Pronostico(
+            ci = "hola"
+        )
+        router.navegar(ruta)
     }
 
-    private fun borrarTodo(){
-        uiState = ClimaEstado.Vacio
-    }
-
-    private fun mostrarCaba(){
-
-    }
 
     fun traerClima() {
         uiState = ClimaEstado.Cargando
@@ -67,7 +63,7 @@ class ClimaViewModelFactory(
     private val repositorio: Repositorio,
     private val router: Router,
     private val lat: Float,
-    private val lon: Float
+    private val lon: Float,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

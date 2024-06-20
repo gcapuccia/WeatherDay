@@ -2,6 +2,7 @@ package com.example.weatherday.repository
 
 import com.example.weatherday.repository.modelos.Ciudad
 import com.example.weatherday.repository.modelos.Clima
+import com.example.weatherday.repository.modelos.ListForecast
 
 class RepositorioMock : Repositorio{
     override suspend fun buscarCiudad(ciudad: String): List<Ciudad> {
@@ -24,7 +25,7 @@ class RepositorioMock : Repositorio{
         TODO("Not yet implemented")
     }
 
-    override suspend fun traerPronostico(ciudad: Ciudad): List<Clima> {
+    override suspend fun traerPronostico(ciudad: String): List<ListForecast> {
         TODO("Not yet implemented")
     }
 

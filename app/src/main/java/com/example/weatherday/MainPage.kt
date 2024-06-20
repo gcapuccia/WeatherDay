@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.weatherday.presentacion.ciudades.CiudadesPage
 import com.example.weatherday.presentacion.clima.ClimaPage
+import com.example.weatherday.presentacion.pronosticos.PronosticoPage
 import com.example.weatherday.router.Ruta
 
 @Composable
@@ -66,7 +67,13 @@ fun MainPage(modifier: Modifier = Modifier) {
             val lat = it.arguments?.getFloat("lat") ?: 0.0f
             val lon = it.arguments?.getFloat("lon") ?: 0.0f
             ClimaPage(navHostController, lat = lat, lon = lon)
-
+        }
+        composable(
+            route= "pronostico/{ci}",
+            //arguments = navArgument("ci") {type= NavType.StringType}
+            ){
+            val ci = it.arguments?.getString("ci") ?:""
+            PronosticoPage(navHostController, ci)
         }
     }
   }
