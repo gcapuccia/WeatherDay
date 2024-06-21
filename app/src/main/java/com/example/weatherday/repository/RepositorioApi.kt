@@ -10,7 +10,6 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.parameters
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -28,14 +27,14 @@ class RepositorioApi : Repositorio{
         }
     }
 
-    override suspend fun buscarCiudad(ciudad: String): List<Ciudad> {
-        val respuesta = cliente.get("https://api.openweathermap.org/geo/1.0/direct"){
+    override suspend fun CiudadBuscada(ciudad: String): List<Ciudad> {
+        val query = cliente.get("https://api.openweathermap.org/geo/1.0/direct"){
             parameter("q",ciudad)
             parameter("limit", 2)
             parameter("appid", apiKey)
         }
-        if (respuesta.status == HttpStatusCode.OK){
-            val ciudades = respuesta.body<List<Ciudad>>()
+        if (query.status == HttpStatusCode.OK){
+            val ciudades = query.body<List<Ciudad>>()
             return ciudades
         }else{
             throw Exception()
@@ -43,30 +42,32 @@ class RepositorioApi : Repositorio{
     }
 
 
-    override suspend fun traerClima(lat: Float, lon: Float): Clima {
-        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/weather"){
+    override suspend fun mostrarClima(lat: Float, lon: Float): Clima {
+        val query = cliente.get("https://api.openweathermap.org/data/2.5/weather"){
             parameter("lat",lat)
             parameter("lon",lon)
             parameter("lang","sp")
             parameter("units","metric")
             parameter("appid",apiKey)
         }
-        if (respuesta.status == HttpStatusCode.OK){
-            val clima = respuesta.body<Clima>()
+        if (query.status == HttpStatusCode.OK){
+            val clima = query.body<Clima>()
             return clima
         }else{
             throw Exception()
         }
     }
 
-    override suspend fun traerPronostico(nombre: String): List<ListForecast> {
-        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/forecast"){
-            parameter("q","nombre")
+    override suspend fun mostrarPronostico(nombre: String): List<ListForecast> {
+        val query = cliente.get("https://api.openweathermap.org/data/2.5/forecast"){
+            parameter("q",nombre)
             parameter("units","metric")
+            parameter("cnt", 20)
+            parameter("lang", "sp")
             parameter("appid",apiKey)
         }
-        if (respuesta.status == HttpStatusCode.OK){
-            val forecast = respuesta.body<ForecastDTO>()
+        if (query.status == HttpStatusCode.OK){
+            val forecast = query.body<ForecastDTO>()
             return forecast.list
         }else{
             throw Exception()

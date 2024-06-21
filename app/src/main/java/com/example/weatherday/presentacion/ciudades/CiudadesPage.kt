@@ -8,7 +8,7 @@ import com.example.weatherday.router.Enrutador
 
 @Composable
 fun CiudadesPage(
-    navHostController: NavHostController
+    navHostController:  NavHostController
 ) {
     val viewModel : CiudadesViewModel = viewModel(
         factory = CiudadesViewModelFactory(

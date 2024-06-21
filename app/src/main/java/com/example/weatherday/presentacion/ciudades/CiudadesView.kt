@@ -1,6 +1,5 @@
 package com.example.weatherday.presentacion.ciudades
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +8,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,54 +31,80 @@ import androidx.compose.ui.unit.sp
 import com.example.weatherday.repository.modelos.Ciudad
 
 @Composable
-fun CiudadesView(
+fun CiudadesView (
     modifier: Modifier = Modifier,
-    state: CiudadesEstado,
-    onAction:(CiudadesIntencion)->Unit
-){
+    state : CiudadesEstado,
+    onAction: (CiudadesIntencion)->Unit
+) {
+    var value by remember{ mutableStateOf("") }
 
-    var value by remember{mutableStateOf("")}
-
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(20.dp),
+    Column(modifier = modifier.fillMaxSize().padding(20.dp),
         //verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(50.dp))
         Text(text = "Bienvenido!",
-            modifier = Modifier.padding(10.dp)
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
         )
         TextField(
             value = value,
+            label = { Text(text = "Buscar Nombre de Ciudad") },
             onValueChange = {
                 value = it
-                onAction(CiudadesIntencion.Buscar(value))},
-            label = { Text(text = "Buscar Ciudad")},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                onAction(CiudadesIntencion.Buscar(it))
+            },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
-        when(state){
-            CiudadesEstado.Cargando -> Text(text = "Cargando...")
-            is CiudadesEstado.Error -> Text(text = state.mensaje)
-            is CiudadesEstado.Resultados -> ListaDeCiudades(state.ciudades) {
-                onAction(
-                    CiudadesIntencion.Seleccionar(it)
-                )
+        when(state) {
+            CiudadesEstado.Cargando -> VistaCargando()
+            is CiudadesEstado.Error -> ErrorView(mensaje = state.mensaje)
+            is CiudadesEstado.Resultado -> CiudadesListado(state.ciudades) {
+                onAction(CiudadesIntencion.Seleccionar(it))
             }
-            CiudadesEstado.Vacio -> Text(text = "Sin Resultados")
+            CiudadesEstado.Vacio -> VistaVacia()
         }
-        //Button(onClick = { onAction(CiudadesIntencion.Seleccionar(0)) }) {
-        //    Text(text = "Siguiente")
-        //}
     }
+}
 
+@Composable
+fun ErrorView(mensaje: String){
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(Icons.Filled.Close, contentDescription = "Error")
+        Text(text = "Error: " + mensaje)
+    }
+}
+
+@Composable
+fun VistaCargando(){
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Cargando...")
+        Icon(Icons.Filled.Refresh, contentDescription = "Cargando")
+    }
+}
+@Composable
+fun VistaVacia(){
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Sin Datos")
+        Icon(Icons.Filled.Info, contentDescription = "Sin Datos")
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaDeCiudades(ciudades: List<Ciudad>, onSelect: (Ciudad)->Unit){
+fun CiudadesListado(ciudades: List<Ciudad>, onSelect: (Ciudad)->Unit){
     LazyColumn{
         items(items = ciudades) {
             Card (onClick = { onSelect(it)},

@@ -8,43 +8,30 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherday.repository.Repositorio
 import com.example.weatherday.router.Router
-import com.example.weatherday.router.Ruta
 import kotlinx.coroutines.launch
 
 
 class ClimaViewModel(
     val respositorio: Repositorio,
     val router: Router,
-    val lat: Float,
-    val lon: Float
+    val lat : Float,
+    val lon : Float,
+    val nombre: String
 ) : ViewModel() {
 
     var uiState by mutableStateOf<ClimaEstado>(ClimaEstado.Vacio)
 
     fun ejecutar(intencion: ClimaIntencion){
         when(intencion){
-
-            is ClimaIntencion.actualizarClima -> traerClima()
-            is ClimaIntencion.pronosticoClima -> MostrarPronostico(ciudad = intencion.ciudad)
-            else -> {}
-
+            ClimaIntencion.dameClima -> traerClima()
         }
     }
-
-
-    private fun MostrarPronostico(ciudad: String){
-        val ruta = Ruta.Pronostico(
-            ci = "hola"
-        )
-        router.navegar(ruta)
-    }
-
 
     fun traerClima() {
         uiState = ClimaEstado.Cargando
         viewModelScope.launch {
             try{
-                val clima = respositorio.traerClima(lat = lat, lon = lon)
+                val clima = respositorio.mostrarClima(lat = lat, lon = lon)
                 uiState = ClimaEstado.Exitoso(
                     ciudad = clima.name ,
                     temperatura = clima.main.temp,
@@ -64,11 +51,12 @@ class ClimaViewModelFactory(
     private val router: Router,
     private val lat: Float,
     private val lon: Float,
+    private val nombre: String,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ClimaViewModel::class.java)) {
-            return ClimaViewModel(repositorio,router,lat,lon) as T
+            return ClimaViewModel(repositorio,router,lat,lon,nombre) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
